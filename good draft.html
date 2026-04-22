@@ -1,0 +1,1273 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Balkans Identity Quiz</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root, [data-theme="light"] {
+      --font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+      --font-body: 'Inter', system-ui, sans-serif;
+      --text-xs: clamp(0.75rem, 0.7rem + 0.2vw, 0.875rem);
+      --text-sm: clamp(0.875rem, 0.82rem + 0.25vw, 1rem);
+      --text-base: clamp(1rem, 0.95rem + 0.2vw, 1.125rem);
+      --text-lg: clamp(1.125rem, 1rem + 0.6vw, 1.35rem);
+      --text-xl: clamp(1.6rem, 1.25rem + 1vw, 2.4rem);
+      --text-2xl: clamp(2.25rem, 1.6rem + 2.4vw, 4.5rem);
+      --space-1: 0.25rem; --space-2: 0.5rem; --space-3: 0.75rem; --space-4: 1rem;
+      --space-5: 1.25rem; --space-6: 1.5rem; --space-8: 2rem; --space-10: 2.5rem;
+      --space-12: 3rem; --space-16: 4rem;
+      --color-bg: #fbf7f2;
+      --color-surface: #ffffff;
+      --color-surface-2: #f3ede4;
+      --color-surface-3: #fff5f3;
+      --color-border: #121212;
+      --color-text: #111111;
+      --color-text-muted: #5a5a5a;
+      --color-text-faint: #8a8a8a;
+      --color-primary: #e52323;
+      --color-primary-deep: #b81414;
+      --color-accent-soft: #ffd7d2;
+      --color-correct: #157347;
+      --color-wrong: #c61e1e;
+      --color-timer: #ffde59;
+      --shadow-flat: 6px 6px 0 #111111;
+      --shadow-flat-lg: 10px 10px 0 #111111;
+      --radius-sm: 12px; --radius-md: 18px; --radius-lg: 24px; --radius-full: 999px;
+      --transition-interactive: 160ms cubic-bezier(.2,.8,.2,1);
+    }
+
+    * { box-sizing: border-box; }
+    html {
+      -webkit-text-size-adjust: none;
+      text-size-adjust: none;
+      scroll-behavior: smooth;
+    }
+    body {
+      margin: 0;
+      min-height: 100dvh;
+      font-family: var(--font-body);
+      font-size: var(--text-base);
+      color: var(--color-text);
+      background:
+        radial-gradient(circle at top left, rgba(229,35,35,.09), transparent 22%),
+        radial-gradient(circle at bottom right, rgba(255,215,210,.7), transparent 24%),
+        linear-gradient(180deg, #fffdfa, var(--color-bg));
+    }
+    button, input, select { font: inherit; color: inherit; }
+    button { cursor: pointer; }
+    h1, h2, h3, p { margin: 0; }
+
+    .shell {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: var(--space-4);
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: var(--space-4);
+      padding: var(--space-4) 0 var(--space-5);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+
+    .logo {
+      width: 56px;
+      height: 56px;
+      border: 3px solid var(--color-border);
+      border-radius: 16px;
+      background: var(--color-primary);
+      box-shadow: var(--shadow-flat);
+      display: grid;
+      place-items: center;
+      color: #fff;
+      transform: rotate(-4deg);
+      flex: 0 0 auto;
+    }
+
+    .logo svg { width: 28px; height: 28px; }
+
+    .brand-copy {
+      display: grid;
+      gap: 0.15rem;
+    }
+
+    .brand-kicker {
+      font-size: var(--text-xs);
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--color-text-muted);
+      font-weight: 700;
+    }
+
+    .brand-title {
+      font-family: var(--font-display);
+      font-size: clamp(1.4rem, 1.1rem + 1vw, 2rem);
+      font-style: italic;
+      text-transform: uppercase;
+      letter-spacing: .03em;
+      line-height: .95;
+    }
+
+    .brand-sub {
+      color: var(--color-text-muted);
+      font-size: var(--text-sm);
+      font-weight: 600;
+    }
+
+    .theme-toggle {
+      min-height: 48px;
+      min-width: 48px;
+      border: 3px solid var(--color-border);
+      border-radius: 14px;
+      background: var(--color-surface);
+      box-shadow: 4px 4px 0 var(--color-border);
+      font-weight: 800;
+    }
+
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    .poster,
+    .card,
+    .hud-chip,
+    .status,
+    .option-btn,
+    .next-btn,
+    .ghost-btn,
+    .difficulty-btn,
+    .pack-btn,
+    .mode-pill,
+    .timer-badge,
+    .result-banner {
+      border: 3px solid var(--color-border);
+      border-radius: var(--radius-md);
+      background: var(--color-surface);
+    }
+
+    .poster {
+      position: relative;
+      padding: clamp(1.4rem, 4vw, 2.5rem);
+      box-shadow: var(--shadow-flat-lg);
+      overflow: hidden;
+    }
+
+    .poster::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(135deg, rgba(229,35,35,.05), transparent 34%),
+        linear-gradient(0deg, rgba(0,0,0,.015), rgba(0,0,0,0));
+      pointer-events: none;
+    }
+
+    .hero-grid,
+    .grid {
+      display: grid;
+      gap: var(--space-5);
+    }
+
+    .hero-grid { grid-template-columns: 1.2fr .8fr; align-items: stretch; }
+    .grid { grid-template-columns: 1.08fr .92fr; align-items: start; }
+
+    .kicker,
+    .chip,
+    .section-label {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      min-height: 36px;
+      padding: 0 .85rem;
+      border: 3px solid var(--color-border);
+      border-radius: var(--radius-full);
+      background: #fff;
+      font-size: var(--text-xs);
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      font-weight: 800;
+    }
+
+    .kicker { background: var(--color-accent-soft); }
+    .chip { background: var(--color-surface-2); }
+
+    .hero-title {
+      margin-top: var(--space-4);
+      font-family: var(--font-display);
+      font-size: var(--text-2xl);
+      line-height: .9;
+      text-transform: uppercase;
+      font-style: italic;
+      letter-spacing: .02em;
+      max-width: 10ch;
+      text-wrap: balance;
+      text-shadow: 2px 2px 0 rgba(0,0,0,.06);
+    }
+
+    .hero-title .accent {
+      display: inline-block;
+      color: var(--color-primary);
+    }
+
+    .lede {
+      margin-top: var(--space-4);
+      color: var(--color-text-muted);
+      max-width: 60ch;
+      font-size: var(--text-base);
+    }
+
+    .logo-banner {
+      margin-top: var(--space-6);
+      display: inline-flex;
+      align-items: center;
+      gap: .65rem;
+      padding: .6rem .9rem;
+      background: var(--color-primary);
+      color: #fff;
+      border: 3px solid var(--color-border);
+      border-radius: 16px;
+      box-shadow: 6px 6px 0 var(--color-border);
+      font-family: var(--font-display);
+      font-style: italic;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      font-size: clamp(1.15rem, 1rem + 1vw, 1.7rem);
+      width: fit-content;
+      max-width: 100%;
+    }
+
+    .logo-banner .mini-mark {
+      width: 18px;
+      height: 18px;
+      border-radius: 999px;
+      background: #fff;
+      box-shadow: inset 0 0 0 3px var(--color-border);
+      flex: 0 0 auto;
+    }
+
+    .card {
+      padding: var(--space-5);
+      box-shadow: var(--shadow-flat);
+      position: relative;
+    }
+
+    .difficulty-card,
+    .pack-list,
+    .rules,
+    .question-card,
+    .reveal-card,
+    .results-card {
+      background: var(--color-surface);
+    }
+
+    .difficulty-buttons,
+    .pack-buttons,
+    .options {
+      display: grid;
+      gap: var(--space-3);
+      margin-top: var(--space-4);
+    }
+
+    .difficulty-group {
+      display: grid;
+      gap: var(--space-3);
+      margin-top: var(--space-4);
+    }
+
+    .mode-pill {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: var(--space-3);
+      align-items: start;
+      width: 100%;
+      padding: var(--space-4);
+      text-align: left;
+      background: linear-gradient(180deg, #fff, #f8f1e8);
+      box-shadow: 4px 4px 0 var(--color-border);
+      transition: transform var(--transition-interactive), box-shadow var(--transition-interactive), background var(--transition-interactive);
+    }
+
+    .mode-pill .mode-tag {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      border: 3px solid var(--color-border);
+      display: grid;
+      place-items: center;
+      background: var(--color-accent-soft);
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      font-style: italic;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .difficulty-btn,
+    .pack-btn,
+    .option-btn,
+    .next-btn,
+    .ghost-btn {
+      width: 100%;
+      padding: var(--space-4);
+      text-align: left;
+      transition: transform var(--transition-interactive), box-shadow var(--transition-interactive), background var(--transition-interactive), color var(--transition-interactive);
+      box-shadow: 4px 4px 0 var(--color-border);
+    }
+
+    .difficulty-btn:hover,
+    .pack-btn:hover,
+    .option-btn:hover,
+    .next-btn:hover,
+    .ghost-btn:hover,
+    .mode-pill:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 6px 6px 0 var(--color-border);
+    }
+
+    .difficulty-btn:active,
+    .pack-btn:active,
+    .option-btn:active,
+    .next-btn:active,
+    .ghost-btn:active,
+    .mode-pill:active {
+      transform: translate(2px, 2px);
+      box-shadow: 0 0 0 var(--color-border);
+    }
+
+    .difficulty-btn strong,
+    .pack-btn strong,
+    .option-btn strong,
+    .mode-pill strong {
+      display: block;
+      font-weight: 800;
+      color: var(--color-text);
+    }
+
+    .difficulty-btn span,
+    .pack-btn span,
+    .option-btn span,
+    .mode-pill span,
+    .muted,
+    .small {
+      color: var(--color-text-muted);
+    }
+
+    .difficulty-btn.primary,
+    .pack-btn.primary,
+    .next-btn.primary,
+    .mode-pill.primary {
+      background: linear-gradient(180deg, #ff4c4c, var(--color-primary));
+      color: #fff;
+    }
+
+    .difficulty-btn.primary strong,
+    .pack-btn.primary strong,
+    .next-btn.primary strong,
+    .mode-pill.primary strong,
+    .difficulty-btn.primary span,
+    .pack-btn.primary span,
+    .next-btn.primary span,
+    .mode-pill.primary span,
+    .mode-pill.primary .mode-tag {
+      color: #fff;
+    }
+
+    .mode-pill.primary .mode-tag {
+      background: rgba(255,255,255,.18);
+    }
+
+    .rules ul {
+      margin: var(--space-4) 0 0;
+      padding-left: 1.1rem;
+      display: grid;
+      gap: .55rem;
+      color: var(--color-text-muted);
+    }
+
+    .rules li::marker { color: var(--color-primary); }
+
+    .actions {
+      display: flex;
+      gap: var(--space-3);
+      flex-wrap: wrap;
+      margin-top: var(--space-5);
+    }
+
+    .next-btn,
+    .ghost-btn {
+      width: auto;
+      min-width: 180px;
+      min-height: 52px;
+      text-align: center;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+
+    .next-btn.primary {
+      background: linear-gradient(180deg, #ff4c4c, var(--color-primary));
+      color: #fff;
+    }
+
+    .ghost-btn {
+      background: #fff;
+    }
+
+    .hud {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0,1fr));
+      gap: var(--space-3);
+      margin-bottom: var(--space-4);
+    }
+
+    .hud-chip {
+      min-height: 62px;
+      padding: .8rem .9rem;
+      display: grid;
+      gap: .2rem;
+      box-shadow: 4px 4px 0 var(--color-border);
+      background: #fff;
+    }
+
+    .hud-chip .label {
+      font-size: .72rem;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      font-weight: 800;
+      color: var(--color-text-faint);
+    }
+
+    .hud-chip .value {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      line-height: .95;
+      text-transform: uppercase;
+      font-style: italic;
+    }
+
+    .hud-chip.timer-badge {
+      background: var(--color-timer);
+    }
+
+    .hud-chip.score-badge {
+      background: var(--color-accent-soft);
+    }
+
+    .question-card h2,
+    .reveal-card h2,
+    .results-card h2,
+    .difficulty-card h2,
+    .pack-list h2,
+    .rules h2 {
+      font-family: var(--font-display);
+      font-size: var(--text-xl);
+      font-style: italic;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      line-height: .95;
+      margin-top: var(--space-3);
+      margin-bottom: var(--space-4);
+    }
+
+    .question-text {
+      font-size: clamp(1.05rem, 1rem + .3vw, 1.3rem);
+      line-height: 1.45;
+      max-width: 60ch;
+      margin-bottom: var(--space-5);
+    }
+
+    .option-btn {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: var(--space-4);
+      align-items: start;
+      min-height: 76px;
+      background: linear-gradient(180deg, #fff, #faf6f1);
+    }
+
+    .letter {
+      width: 42px;
+      height: 42px;
+      border: 3px solid var(--color-border);
+      border-radius: 12px;
+      background: var(--color-accent-soft);
+      display: grid;
+      place-items: center;
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      font-style: italic;
+      font-weight: 800;
+      line-height: 1;
+      flex: 0 0 auto;
+    }
+
+    .option-btn.correct {
+      background: linear-gradient(180deg, #e7fff2, #cbf5dc);
+      border-color: var(--color-border);
+    }
+
+    .option-btn.wrong {
+      background: linear-gradient(180deg, #ffe8e8, #ffd0d0);
+      border-color: var(--color-border);
+    }
+
+    .option-btn.dim {
+      opacity: .68;
+      filter: grayscale(.15);
+    }
+
+    .status {
+      margin-top: var(--space-5);
+      padding: var(--space-4);
+      box-shadow: 4px 4px 0 var(--color-border);
+      background: var(--color-surface-3);
+      color: var(--color-text);
+      font-weight: 700;
+    }
+
+    .status strong { color: var(--color-primary); }
+
+    .result-banner {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      padding: .65rem .9rem;
+      background: var(--color-primary);
+      color: #fff;
+      box-shadow: 4px 4px 0 var(--color-border);
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      font-size: var(--text-xs);
+      font-weight: 800;
+    }
+
+    .answer-line {
+      margin-bottom: var(--space-4);
+      font-family: var(--font-display);
+      font-size: clamp(1.5rem, 1.2rem + 1vw, 2rem);
+      line-height: .95;
+      text-transform: uppercase;
+      font-style: italic;
+      color: var(--color-primary);
+    }
+
+    .result-meter {
+      display: grid;
+      gap: var(--space-3);
+      margin: var(--space-6) 0;
+    }
+
+    .bar {
+      height: 20px;
+      border: 3px solid var(--color-border);
+      border-radius: 999px;
+      background: #fff;
+      overflow: hidden;
+      box-shadow: inset 0 0 0 2px rgba(0,0,0,.02);
+    }
+
+    .bar > span {
+      display: block;
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #ff6b6b, var(--color-primary));
+      transition: width .45s ease;
+    }
+
+    .celebration-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: var(--space-3);
+      margin-top: var(--space-5);
+    }
+
+    .mini-stat {
+      padding: var(--space-4);
+      border: 3px solid var(--color-border);
+      border-radius: var(--radius-md);
+      background: #fff;
+      box-shadow: 4px 4px 0 var(--color-border);
+    }
+
+    .mini-stat .label {
+      display: block;
+      font-size: .72rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      font-weight: 800;
+      color: var(--color-text-faint);
+      margin-bottom: .35rem;
+    }
+
+    .mini-stat .value {
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      line-height: .95;
+      text-transform: uppercase;
+      font-style: italic;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    :focus-visible {
+      outline: 3px solid var(--color-primary-deep);
+      outline-offset: 3px;
+    }
+
+    @media (max-width: 860px) {
+      .hero-grid, .grid { grid-template-columns: 1fr; }
+      .hud { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    }
+
+    @media (max-width: 560px) {
+      .shell { padding: var(--space-3); }
+      .topbar { padding-top: var(--space-3); }
+      .poster, .card { padding: var(--space-4); }
+      .brand { align-items: flex-start; }
+      .logo { width: 50px; height: 50px; }
+      .hero-title { max-width: 9ch; }
+      .actions { display: grid; grid-template-columns: 1fr; }
+      .next-btn, .ghost-btn { width: 100%; min-width: 0; }
+      .hud { grid-template-columns: 1fr 1fr; }
+      .hud-chip:last-child { grid-column: 1 / -1; }
+      .question-text { font-size: var(--text-base); }
+      .celebration-grid { grid-template-columns: 1fr; }
+      .option-btn { min-height: 68px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo" aria-label="Quiz logo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M4 7.5 12 3l8 4.5-8 4.5L4 7.5Z"></path>
+            <path d="M4 16.5 12 12l8 4.5-8 4.5-8-4.5Z"></path>
+            <path d="M12 12v9"></path>
+          </svg>
+        </div>
+        <div class="brand-copy">
+          <div class="brand-kicker">Quiz Edition</div>
+          <div class="brand-title">Balkans Identity Quiz</div>
+          <div class="brand-sub">War, Peace, and Identity in the Balkans</div>
+        </div>
+      </div>
+      
+    </header>
+
+    <main>
+      <section id="difficulty-screen" class="screen active poster">
+        <span class="kicker">Step one · set the pressure</span>
+        <div class="hero-grid">
+          <div>
+            <div class="logo-banner"><span class="mini-mark" aria-hidden="true"></span> Guess the Country</div>
+            <h1 class="hero-title">Who am <span class="accent">I?</span> The Balkans challenge.</h1>
+            <p class="lede">Choose a difficulty, set the pace, and step into a fast-moving challenge shaped by history, geography, war, peace, and identity across the Balkans.</p>
+          </div>
+          <div class="card rules">
+            <span class="chip">How the round works</span>
+            <h2>Stack the odds</h2>
+            <ul>
+              <li>Choose your difficulty to set the pace of the round.</li>
+              <li>Each pack contains five questions at the chosen level.</li>
+              <li>Fast, accurate answers build your score before the timer hits zero.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="card difficulty-card" style="margin-top: var(--space-5);">
+          <span class="section-label">Difficulty selector</span>
+          <h2>Choose your lane</h2>
+          <div class="difficulty-group" id="difficulty-buttons"></div>
+          <div class="actions">
+            <button class="next-btn primary" id="continue-difficulty-btn">Continue to packs</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="start-screen" class="screen poster">
+        <span class="kicker">Step two · pick a pack</span>
+        <h1 class="hero-title">Choose the <span class="accent">arena</span>.</h1>
+        
+        <div class="grid" style="margin-top: var(--space-5);">
+          <div class="card pack-list">
+            <span class="section-label">Pack selector</span>
+            <h2>Select the round</h2>
+            <div class="pack-buttons" id="pack-buttons"></div>
+            <div class="actions">
+              <button class="ghost-btn" id="back-to-difficulty-btn">Back</button>
+              <button class="next-btn primary" id="select-pack-btn">Start quiz</button>
+            </div>
+          </div>
+          <div class="card rules">
+            <span class="chip">Round notes</span>
+            <h2>Before you start</h2>
+            <ul>
+              <li>Each question gives you four country options.</li>
+              <li>After every answer, you get the correct country and a short explanation.</li>
+              <li>Every correct answer unlocks a short explanation before the next question begins.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section id="quiz-screen" class="screen">
+        <div class="hud">
+          <div class="hud-chip"><span class="label">Difficulty</span><span class="value" id="hud-difficulty">Hard</span></div>
+          <div class="hud-chip"><span class="label">Pack</span><span class="value" id="hud-pack">Pack</span></div>
+          <div class="hud-chip"><span class="label">Progress</span><span class="value" id="hud-progress">1 / 5</span></div>
+          <div class="hud-chip timer-badge"><span class="label">Timer</span><span class="value" id="hud-timer">20s</span></div>
+          <div class="hud-chip score-badge"><span class="label">Score</span><span class="value" id="hud-score">0</span></div>
+        </div>
+        <div class="card question-card">
+          <span class="section-label">Current question</span>
+          <h2 id="question-title">Question</h2>
+          <p class="question-text" id="question-text"></p>
+          <div class="options" id="options"></div>
+          <div id="question-status" class="status" style="display:none;"></div>
+        </div>
+      </section>
+
+      <section id="reveal-screen" class="screen">
+        <div class="hud">
+          <div class="hud-chip"><span class="label">Difficulty</span><span class="value" id="reveal-difficulty">Hard</span></div>
+          <div class="hud-chip"><span class="label">Pack</span><span class="value" id="reveal-pack">Pack</span></div>
+          <div class="hud-chip"><span class="label">Progress</span><span class="value" id="reveal-progress">1 / 5</span></div>
+          <div class="hud-chip score-badge" style="grid-column: span 2;"><span class="label">Score</span><span class="value" id="reveal-score">0</span></div>
+        </div>
+        <div class="card reveal-card">
+          <div class="result-banner">Round reveal</div>
+          <h2>The answer</h2>
+          <p class="answer-line" id="reveal-answer"></p>
+          <p id="reveal-explanation" class="question-text"></p>
+          <div class="actions">
+            <button class="next-btn primary" id="next-btn">Next question</button>
+            <button class="ghost-btn" id="restart-btn-1">Main menu</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="results-screen" class="screen">
+        <div class="card results-card">
+          <div class="result-banner">Pack complete</div>
+          <h2 id="results-title">Results</h2>
+          <p id="results-summary" class="question-text"></p>
+          <div class="result-meter">
+            <div class="bar"><span id="score-bar"></span></div>
+            <div class="small" id="score-detail"></div>
+          </div>
+          <div class="celebration-grid">
+            <div class="mini-stat"><span class="label">Final score</span><span class="value" id="result-score-count">0</span></div>
+            <div class="mini-stat"><span class="label">Accuracy</span><span class="value" id="result-score-percent">0%</span></div>
+          </div>
+          <div class="actions">
+            <button class="next-btn primary" id="restart-btn-2">Main menu</button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const questionBank = {
+      easy: [
+        {
+          id: 'borders',
+          title: 'Pack A · Borders',
+          blurb: 'Geography, strategic location, coastlines, and contested space.',
+          questions: [
+            {
+              prompt: 'My territory stretches from the Pannonian Plain to the Dinaric Alps, and I border Slovenia, Hungary, Serbia, Bosnia and Herzegovina, and Montenegro. Which country am I?',
+              options: ['Serbia', 'Croatia', 'Romania', 'Bulgaria'],
+              answer: 'Croatia',
+              explanation: 'Croatia is the only option that matches both the geography, from lowland north to Dinaric coastlands, and that exact set of neighboring countries.'
+            },
+            {
+              prompt: 'My territory stretches from high mountain ranges down to a short Adriatic coast, and I regained independence peacefully in the early 21st century after the dissolution of a state I had long been part of. Which country am I?',
+              options: ['Albania', 'Croatia', 'Montenegro', 'Slovenia'],
+              answer: 'Montenegro',
+              explanation: 'Montenegro has the mountainous interior, short Adriatic coastline, and the peaceful 2006 independence referendum that make it the clearest match.'
+            },
+            {
+              prompt: 'Almost all of my territory lies along the lower Danube and the Black Sea, and I am described as both a Balkan and a Danubian country. Which country am I?',
+              options: ['Bulgaria', 'Romania', 'Serbia', 'Moldova'],
+              answer: 'Romania',
+              explanation: 'Romania is regularly framed as both Balkan and Danubian because of its lower Danube position and Black Sea coastline.'
+            },
+            {
+              prompt: 'My territory includes both Adriatic and Ionian coasts, but much of my interior is mountainous. I border Montenegro, Kosovo, North Macedonia, and Greece. Which country am I?',
+              options: ['Albania', 'Bulgaria', 'Croatia', 'North Macedonia'],
+              answer: 'Albania',
+              explanation: 'Albania fits because it has both Adriatic and Ionian coastlines and borders exactly Montenegro, Kosovo, North Macedonia, and Greece.'
+            },
+            {
+              prompt: 'I have a very short Adriatic coastline at Neum, while most of my territory is mountainous or inland. My modern state is also known for its complex internal structure shaped after the 1990s war. Which country am I?',
+              options: ['Croatia', 'Montenegro', 'Bosnia and Herzegovina', 'Albania'],
+              answer: 'Bosnia and Herzegovina',
+              explanation: 'Bosnia and Herzegovina is correct because it has the small Adriatic outlet at Neum and is widely associated with the complex postwar constitutional structure created after the 1990s conflict.'
+            }
+          ]
+        },
+        {
+          id: 'wars',
+          title: 'Pack B · Wars',
+          blurb: 'Ottoman decline, the Balkan Wars, Yugoslavia, and constitutional aftermath.',
+          questions: [
+            {
+              prompt: 'After World War II, I became a republic within socialist Yugoslavia. When that federation collapsed, I declared independence without descending into the scale of warfare seen in Croatia or Bosnia and Herzegovina, though my state identity later became entangled in disputes over name and recognition. Which country am I?',
+              options: ['North Macedonia', 'Croatia', 'Bosnia and Herzegovina', 'Serbia'],
+              answer: 'North Macedonia',
+              explanation: 'North Macedonia is correct because it left Yugoslavia without a major war in the early 1990s, yet later faced long disputes over its name, symbols, and international recognition.'
+            },
+            {
+              prompt: 'My modern constitution was crafted after a violent war in the 1990s and recognizes several constituent peoples who share power through complex institutions designed to prevent renewed conflict. Which country am I?',
+              options: ['Bosnia and Herzegovina', 'North Macedonia', 'Montenegro', 'Kosovo'],
+              answer: 'Bosnia and Herzegovina',
+              explanation: 'Bosnia and Herzegovina is correct because the Dayton framework created a power-sharing constitutional order centered on Bosniaks, Serbs, and Croats as constituent peoples.'
+            },
+            {
+              prompt: 'My late-1990s conflict involved NATO airstrikes, and for years after my declaration of independence, debates over my final status divided international organizations and my neighbors. Which country am I?',
+              options: ['Kosovo', 'North Macedonia', 'Montenegro', 'Serbia'],
+              answer: 'Kosovo',
+              explanation: 'Kosovo is the clear answer because the 1999 conflict drew NATO intervention and its 2008 independence has remained internationally contested.'
+            },
+            {
+              prompt: 'My independence is closely associated with a revolt against Ottoman rule in the 1820s, after which I became a kingdom recognized by the great powers. Which country am I?',
+              options: ['Greece', 'Serbia', 'Bulgaria', 'Romania'],
+              answer: 'Greece',
+              explanation: 'Greece is correct because its war of independence in the 1820s led to recognition as a kingdom with great-power backing.'
+            },
+            {
+              prompt: 'My modern state emerged through the union of two principalities before later securing full independence from Ottoman influence. Which country am I?',
+              options: ['Romania', 'Bulgaria', 'Albania', 'Montenegro'],
+              answer: 'Romania',
+              explanation: 'Romania fits because the union of Wallachia and Moldavia laid the foundation for the modern Romanian state before full independence followed.'
+            }
+          ]
+        },
+        {
+          id: 'identity',
+          title: 'Pack C · Identity',
+          blurb: 'Churches, language standards, national myths, and overlapping identities.',
+          questions: [
+            {
+              prompt: 'In my country, three main groups share the same South Slav heritage and speak mutually intelligible varieties, yet they often identify as distinct nations—Bosniaks, Serbs, and Croats—distinguished above all by religious origin and historical narratives. Which country am I?',
+              options: ['Bosnia and Herzegovina', 'Croatia', 'Serbia', 'Slovenia'],
+              answer: 'Bosnia and Herzegovina',
+              explanation: 'Bosnia and Herzegovina is the best answer because its public life is structured around Bosniak, Serb, and Croat identities despite shared South Slav linguistic roots.'
+            },
+            {
+              prompt: 'My national myth heavily emphasizes a medieval battle on a plain and a lost empire, presenting my people as historic defenders against Ottoman expansion; these stories still appear in schoolbooks, religious commemorations, and political speeches. Which country am I?',
+              options: ['Bulgaria', 'Serbia', 'Greece', 'Romania'],
+              answer: 'Serbia',
+              explanation: 'Serbia is correct because the Battle of Kosovo and the memory of the medieval Serbian Empire are central elements of Serbian national mythology.'
+            },
+            {
+              prompt: 'My national symbols and school curricula emphasize an ancient alphabet, classical philosophers, and Christian heritage, yet my northern regions share many historical experiences with other Balkan lands under Ottoman and other rule. Which country am I?',
+              options: ['Greece', 'Bulgaria', 'Romania', 'Serbia'],
+              answer: 'Greece',
+              explanation: 'Greece fits because its national story draws heavily on classical antiquity and Orthodoxy even while northern Greek regions share broader Balkan historical experiences.'
+            },
+            {
+              prompt: 'My national identity is strongly tied to Orthodox Christianity and to the Cyrillic alphabet, which is a major symbol of my cultural heritage. Which country am I?',
+              options: ['Bulgaria', 'Serbia', 'Romania', 'Albania'],
+              answer: 'Bulgaria',
+              explanation: 'Bulgaria is the strongest fit because Bulgarian identity is often linked to Orthodoxy and to the historical prestige of the Cyrillic tradition.'
+            },
+            {
+              prompt: 'My society includes Muslim, Orthodox, and Catholic communities, yet my national identity is often described as strongly secular and shaped by language more than religion. Which country am I?',
+              options: ['Albania', 'Bosnia and Herzegovina', 'North Macedonia', 'Montenegro'],
+              answer: 'Albania',
+              explanation: 'Albania fits because Albanian nationalism has often stressed language and shared nationhood across religious lines.'
+            }
+          ]
+        }
+      ],
+      hard: [
+        {
+          id: 'borders',
+          title: 'Pack A · Borders',
+          blurb: 'Geography, strategic location, coastlines, and contested space.',
+          questions: [
+            {
+              prompt: 'My landlocked territory is dominated by the valley of a river that flows south to the Aegean, part of a corridor long imagined as linking Central Europe with the Aegean Sea. Disputes over my name and symbols have made my very identity a diplomatic issue. Which country am I?',
+              options: ['Serbia', 'Bosnia and Herzegovina', 'North Macedonia', 'Kosovo'],
+              answer: 'North Macedonia',
+              explanation: 'North Macedonia fits best because the Vardar valley is its key corridor toward the Aegean, and its state name and symbols were at the center of a long diplomatic dispute.'
+            },
+            {
+              prompt: 'I am the only predominantly Slavic country in the region with direct access to the Black Sea, and I border Romania, Serbia, North Macedonia, Greece, and Turkey. Which country am I?',
+              options: ['Bulgaria', 'Croatia', 'Bosnia and Herzegovina', 'Albania'],
+              answer: 'Bulgaria',
+              explanation: 'Bulgaria is the only answer that is Slavic-speaking, Black Sea-facing, and bordered by that exact combination of five neighbors.'
+            },
+            {
+              prompt: 'I lie almost entirely on a large peninsula that projects into the Mediterranean, yet my historical influence has extended deep into the Balkan interior through trade, religion, and seafaring. Which country am I?',
+              options: ['Greece', 'Bulgaria', 'Albania', 'Romania'],
+              answer: 'Greece',
+              explanation: 'Greece best fits because it occupies most of the southern Balkan peninsula and historically projected commercial, religious, and cultural influence into the wider Balkans.'
+            },
+            {
+              prompt: 'I am mostly inland and known for rugged terrain, yet I still possess a very small opening to the Adriatic Sea that has outsized strategic and symbolic importance. Which country am I?',
+              options: ['Bosnia and Herzegovina', 'Serbia', 'North Macedonia', 'Montenegro'],
+              answer: 'Bosnia and Herzegovina',
+              explanation: 'Bosnia and Herzegovina fits because it is largely inland but retains a narrow Adriatic outlet at Neum.'
+            },
+            {
+              prompt: 'I am landlocked, but my geography places me at a major crossroads between Central Europe and the southern Balkans through a river-and-valley corridor often discussed in strategic terms. Which country am I?',
+              options: ['Serbia', 'Romania', 'Kosovo', 'Bulgaria'],
+              answer: 'Serbia',
+              explanation: 'Serbia is the best answer because the Morava corridor makes it a major north-south crossroads despite lacking direct sea access.'
+            }
+          ]
+        },
+        {
+          id: 'wars',
+          title: 'Pack B · Wars',
+          blurb: 'Ottoman decline, the Balkan Wars, Yugoslavia, and constitutional aftermath.',
+          questions: [
+            {
+              prompt: 'I fought in the Balkan Wars of 1912–13 as part of the Balkan League and emerged deeply dissatisfied with the partition of Macedonia, leading me into a second war in 1913 against former allies. Which country am I?',
+              options: ['Serbia', 'Bulgaria', 'Greece', 'Montenegro'],
+              answer: 'Bulgaria',
+              explanation: 'Bulgaria is correct because frustration over Macedonia pushed it to attack its former allies in 1913, beginning the Second Balkan War.'
+            },
+            {
+              prompt: 'In the 19th century, uprisings against Ottoman rule helped me gain recognition as an autonomous principality, and later a kingdom, whose elites imagined themselves as protectors and liberators of fellow South Slavs. Which country am I?',
+              options: ['Bulgaria', 'Greece', 'Serbia', 'Romania'],
+              answer: 'Serbia',
+              explanation: 'Serbia fits because its modern state grew from uprisings against Ottoman rule and its political elites often presented it as the core liberator of South Slavs.'
+            },
+            {
+              prompt: 'For centuries, much of my territory lay on a frontier between Habsburg and Ottoman rule. The resulting mix of legacies still marks differences between my northern and southern regions today. Which country am I?',
+              options: ['Serbia', 'Bosnia and Herzegovina', 'Croatia', 'Romania'],
+              answer: 'Bosnia and Herzegovina',
+              explanation: 'Bosnia and Herzegovina is the strongest answer because its history as a frontier between empires still shapes its institutional, religious, and cultural landscape.'
+            },
+            {
+              prompt: 'My exit from Yugoslavia involved both constitutional change and war, and the fighting on my territory was longer and more intense than in the republic whose Ten-Day War became famous. Which country am I?',
+              options: ['Croatia', 'Slovenia', 'North Macedonia', 'Montenegro'],
+              answer: 'Croatia',
+              explanation: 'Croatia is correct because its break from Yugoslavia involved a much longer and more destructive conflict than Slovenia\'s brief Ten-Day War.'
+            },
+            {
+              prompt: 'For centuries, I was remembered as a stubborn mountain principality that maintained unusual autonomy and became part of regional memory as a symbol of resistance to Ottoman incorporation. Which country am I?',
+              options: ['Montenegro', 'Serbia', 'Bulgaria', 'Albania'],
+              answer: 'Montenegro',
+              explanation: 'Montenegro fits because it long occupied a special place in Balkan memory as a mountain polity associated with resistance and autonomy.'
+            }
+          ]
+        },
+        {
+          id: 'identity',
+          title: 'Pack C · Identity',
+          blurb: 'Churches, language standards, national myths, and overlapping identities.',
+          questions: [
+            {
+              prompt: 'My national identity has long been contested by neighbors who argued that my majority population was actually part of their own nation; until recently, even the name of my state was disputed. Language, symbols, and the legacy of a medieval kingdom are all part of this struggle. Which country am I?',
+              options: ['North Macedonia', 'Montenegro', 'Kosovo', 'Bosnia and Herzegovina'],
+              answer: 'North Macedonia',
+              explanation: 'North Macedonia is correct because its identity has been challenged by neighboring narratives and the state itself changed its constitutional name after a long dispute.'
+            },
+            {
+              prompt: 'Some of my Orthodox believers look to one neighboring church for authority, while others support a separate national church; debates over autocephaly and ecclesiastical allegiance mirror broader tensions over whether we are our own nation or an offshoot of someone else’s. Which country am I?',
+              options: ['Montenegro', 'North Macedonia', 'Bulgaria', 'Romania'],
+              answer: 'Montenegro',
+              explanation: 'Montenegro fits because church allegiance and the question of a separate Montenegrin nation are tightly intertwined in its recent political and cultural debates.'
+            },
+            {
+              prompt: 'My official language is written in the Latin alphabet, and I am often cited as the only state where this language is purely ours—even though neighboring states insist that their very similar standards are separate languages. Arguments over language names and standards became especially visible after the 1990s. Which country am I?',
+              options: ['Croatia', 'Serbia', 'Bosnia and Herzegovina', 'Montenegro'],
+              answer: 'Croatia',
+              explanation: 'Croatia best matches because post-Yugoslav debates over Croatian, Serbian, Bosnian, and Montenegrin often center on Croatia’s insistence on a distinct Latin-script standard.'
+            },
+            {
+              prompt: 'My national identity often emphasizes that my language is Romance in origin, which makes me stand out linguistically in a region more commonly associated with Slavic and other language families. Which country am I?',
+              options: ['Romania', 'Greece', 'Bulgaria', 'Serbia'],
+              answer: 'Romania',
+              explanation: 'Romania is correct because Romanian identity often highlights the language’s Romance roots as a marker of distinctiveness within the region.'
+            },
+            {
+              prompt: 'My majority population identifies with a broader nation across a nearby border, yet my own statehood remains contested, making identity and recognition inseparable political questions. Which country am I?',
+              options: ['Kosovo', 'Albania', 'North Macedonia', 'Bosnia and Herzegovina'],
+              answer: 'Kosovo',
+              explanation: 'Kosovo fits because its Albanian-majority identity and disputed international recognition make statehood and national belonging deeply intertwined.'
+            }
+          ]
+        }
+      ]
+    };
+
+    const state = {
+      currentPack: null,
+      selectedPackId: null,
+      selectedDifficulty: 'hard',
+      currentIndex: 0,
+      score: 0,
+      answeredCurrent: false,
+      timerValue: 20,
+      timerId: null
+    };
+
+    const screens = {
+      difficulty: document.getElementById('difficulty-screen'),
+      start: document.getElementById('start-screen'),
+      quiz: document.getElementById('quiz-screen'),
+      reveal: document.getElementById('reveal-screen'),
+      results: document.getElementById('results-screen')
+    };
+
+    const difficultyButtons = document.getElementById('difficulty-buttons');
+    const continueDifficultyBtn = document.getElementById('continue-difficulty-btn');
+    const packButtons = document.getElementById('pack-buttons');
+    const selectPackBtn = document.getElementById('select-pack-btn');
+    const backToDifficultyBtn = document.getElementById('back-to-difficulty-btn');
+    const questionText = document.getElementById('question-text');
+    const questionTitle = document.getElementById('question-title');
+    const optionsEl = document.getElementById('options');
+    const questionStatus = document.getElementById('question-status');
+    const revealAnswer = document.getElementById('reveal-answer');
+    const revealExplanation = document.getElementById('reveal-explanation');
+    const nextBtn = document.getElementById('next-btn');
+    const restartBtn1 = document.getElementById('restart-btn-1');
+    const restartBtn2 = document.getElementById('restart-btn-2');
+    const resultsTitle = document.getElementById('results-title');
+    const resultsSummary = document.getElementById('results-summary');
+    const hudTimer = document.getElementById('hud-timer');
+    const scoreBar = document.getElementById('score-bar');
+    const scoreDetail = document.getElementById('score-detail');
+    const resultScoreCount = document.getElementById('result-score-count');
+    const resultScorePercent = document.getElementById('result-score-percent');
+
+    const difficulties = [
+      { id: 'easy', title: 'Easy', blurb: 'Fifteen more direct questions, with five questions in each pack.', tag: 'E' },
+      { id: 'hard', title: 'Hard', blurb: 'Fifteen more interpretive questions, with five questions in each pack.', tag: 'H' }
+    ];
+
+    function getPacksForDifficulty() {
+      return questionBank[state.selectedDifficulty];
+    }
+
+
+    function showScreen(name) {
+      Object.values(screens).forEach(screen => screen.classList.remove('active'));
+      screens[name].classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function buildDifficultyButtons() {
+      difficultyButtons.innerHTML = '';
+      difficulties.forEach(diff => {
+        const btn = document.createElement('button');
+        btn.className = 'mode-pill difficulty-btn' + (diff.id === state.selectedDifficulty ? ' primary' : '');
+        btn.dataset.difficultyId = diff.id;
+        btn.innerHTML = `<span class="mode-tag">${diff.tag}</span><span><strong>${diff.title}</strong><span>${diff.blurb}</span></span>`;
+        btn.addEventListener('click', () => selectDifficulty(diff.id));
+        difficultyButtons.appendChild(btn);
+      });
+    }
+
+    function selectDifficulty(difficultyId) {
+      state.selectedDifficulty = difficultyId;
+      [...difficultyButtons.children].forEach(btn => {
+        btn.classList.toggle('primary', btn.dataset.difficultyId === difficultyId);
+      });
+    }
+
+    function enterPackMenu() {
+      buildPackButtons();
+      showScreen('start');
+    }
+
+    function buildPackButtons() {
+      const packs = getPacksForDifficulty();
+      packButtons.innerHTML = '';
+      state.selectedPackId = packs[0]?.id || null;
+      packs.forEach(pack => {
+        const btn = document.createElement('button');
+        btn.className = 'pack-btn' + (pack.id === state.selectedPackId ? ' primary' : '');
+        btn.dataset.packId = pack.id;
+        btn.innerHTML = `<strong>${pack.title}</strong><span>${pack.blurb}</span>`;
+        btn.addEventListener('click', () => selectPack(pack.id));
+        packButtons.appendChild(btn);
+      });
+    }
+
+    function selectPack(packId) {
+      state.selectedPackId = packId;
+      [...packButtons.children].forEach(btn => {
+        btn.classList.toggle('primary', btn.dataset.packId === packId);
+      });
+    }
+
+    function startPack(packId) {
+      state.currentPack = getPacksForDifficulty().find(p => p.id === packId);
+      state.currentIndex = 0;
+      state.score = 0;
+      renderQuestion();
+      showScreen('quiz');
+    }
+
+    function currentQuestion() {
+      return state.currentPack.questions[state.currentIndex];
+    }
+
+    function setHudChip(id, value) {
+      document.getElementById(id).textContent = value;
+    }
+
+    function updateHud() {
+      const diffLabel = state.selectedDifficulty.charAt(0).toUpperCase() + state.selectedDifficulty.slice(1);
+      const progress = `${state.currentIndex + 1} / ${state.currentPack.questions.length}`;
+      setHudChip('hud-difficulty', diffLabel);
+      setHudChip('hud-pack', state.currentPack.title.replace('Pack ', ''));
+      setHudChip('hud-progress', progress);
+      hudTimer.textContent = `${state.timerValue}s`;
+      setHudChip('hud-score', `${state.score}`);
+      setHudChip('reveal-difficulty', diffLabel);
+      setHudChip('reveal-pack', state.currentPack.title.replace('Pack ', ''));
+      setHudChip('reveal-progress', progress);
+      setHudChip('reveal-score', `${state.score}`);
+    }
+
+    function clearQuestionTimer() {
+      if (state.timerId) {
+        clearInterval(state.timerId);
+        state.timerId = null;
+      }
+    }
+
+    function startQuestionTimer() {
+      clearQuestionTimer();
+      state.timerValue = 20;
+      updateHud();
+      state.timerId = setInterval(() => {
+        state.timerValue -= 1;
+        hudTimer.textContent = `${state.timerValue}s`;
+        hudTimer.parentElement.style.transform = state.timerValue <= 5 ? 'rotate(-1deg)' : 'none';
+        if (state.timerValue <= 0) {
+          clearQuestionTimer();
+          handleAnswer(null, true);
+        }
+      }, 1000);
+    }
+
+    function renderQuestion() {
+      const q = currentQuestion();
+      state.answeredCurrent = false;
+      state.timerValue = 20;
+      updateHud();
+      questionTitle.textContent = state.currentPack.title;
+      questionText.textContent = q.prompt;
+      questionStatus.style.display = 'none';
+      questionStatus.textContent = '';
+      optionsEl.innerHTML = '';
+
+      q.options.forEach((option, index) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.innerHTML = `<span class="letter">${String.fromCharCode(65 + index)}</span><span><strong>${option}</strong><span class="muted">Select this country</span></span>`;
+        btn.addEventListener('click', () => handleAnswer(option, false));
+        optionsEl.appendChild(btn);
+      });
+      startQuestionTimer();
+    }
+
+    function handleAnswer(selected, timedOut = false) {
+      if (state.answeredCurrent) return;
+      state.answeredCurrent = true;
+      clearQuestionTimer();
+      const q = currentQuestion();
+      const isCorrect = selected === q.answer;
+      if (isCorrect) state.score += 1;
+      updateHud();
+
+      [...optionsEl.children].forEach(btn => {
+        const optionText = btn.querySelector('strong').textContent;
+        btn.disabled = true;
+        if (optionText === q.answer) btn.classList.add('correct');
+        else if (optionText === selected) btn.classList.add('wrong');
+        else btn.classList.add('dim');
+      });
+
+      questionStatus.style.display = 'block';
+      questionStatus.innerHTML = timedOut
+        ? `<strong>Time up.</strong> The correct answer is ${q.answer}.`
+        : isCorrect
+          ? `<strong>Correct.</strong> You picked ${q.answer}.`
+          : `<strong>Not quite.</strong> You chose ${selected}, but the correct answer is ${q.answer}.`;
+
+      setTimeout(() => {
+        revealAnswer.textContent = `Correct country: ${q.answer}`;
+        revealExplanation.textContent = q.explanation;
+        showScreen('reveal');
+      }, 900);
+    }
+
+    function nextQuestion() {
+      if (state.currentIndex < state.currentPack.questions.length - 1) {
+        state.currentIndex += 1;
+        renderQuestion();
+        showScreen('quiz');
+      } else {
+        renderResults();
+        showScreen('results');
+      }
+    }
+
+    function renderResults() {
+      const total = state.currentPack.questions.length;
+      const pct = Math.round((state.score / total) * 100);
+      resultsTitle.textContent = `${state.currentPack.title} complete`;
+      resultsSummary.textContent = `You answered ${state.score} out of ${total} correctly on ${state.selectedDifficulty} difficulty.`;
+      scoreBar.style.width = `${pct}%`;
+      scoreDetail.textContent = `${pct}% correct`;
+      resultScoreCount.textContent = `${state.score}/${total}`;
+      resultScorePercent.textContent = `${pct}%`;
+    }
+
+    function backToMenu() {
+      clearQuestionTimer();
+      showScreen('difficulty');
+    }
+
+    continueDifficultyBtn.addEventListener('click', enterPackMenu);
+    selectPackBtn.addEventListener('click', () => startPack(state.selectedPackId));
+    backToDifficultyBtn.addEventListener('click', () => showScreen('difficulty'));
+    nextBtn.addEventListener('click', nextQuestion);
+    restartBtn1.addEventListener('click', backToMenu);
+    restartBtn2.addEventListener('click', backToMenu);
+
+    buildDifficultyButtons();
+  </script>
+</body>
+</html>
